@@ -1,11 +1,13 @@
 from tkinter import*
 import qrcode
+from PIL import Image,ImageTk
+from resizeimage import resizeimage
 from tkinter.font import BOLD
 class Qr_Generator:
     def __init__(self,root):
         self.root=root
         self.root.geometry("900x500+200+50")
-        self.root.title("QR_Generator | Developed by Siddhartha")
+        self.root.title("QR_Generator | Developed by Siddhartha Routhu")
         self.root.resizable(False,False)
 
         title=Label(self.root,text="Qr code Generator",font=("times new roman",40),bg='#053246',fg='white').place(x=0,y=0,relwidth=1)
@@ -59,14 +61,23 @@ class Qr_Generator:
         self.msg=''
         self.lbl_msg.config(text=self.msg)
 
+        self.qr_code.config(image='')
+
     def generate(self):
         if self.var_college.get()=='' or self.var_Std_code.get()=='' or self.var_department.get()=='' or self.var_name.get()=='':
             self.msg='All Fields are required...!'
             self.lbl_msg.config(text=self.msg,fg='red')
+            self.qr_code.config(image='')
 
         else:
-            
-
+            qr_data=(f"Student Reg.No: {self.var_Std_code.get()}\nName: {self.var_name.get()}\nDepartment: {self.var_department.get()}\nCollege/University Name: {self.var_college.get()}")
+            qr_code=qrcode.make(qr_data)
+            #print(qr_code)
+            qr_code=resizeimage.resize_cover(qr_code,[180,180])
+            qr_code.save("PYPROJECT/QR/Std_"+str(self.var_Std_code.get())+'.png')
+            #===QRcode Image update====
+            self.im=ImageTk.PhotoImage(file="PYPROJECT/QR/Std_"+str(self.var_Std_code.get())+'.png')
+            self.qr_code.config(image=self.im)
             #===UPDATING NOTIFICATION===
             self.msg='QRcode Generated Successfully...!'
             self.lbl_msg.config(text=self.msg,fg='green')
